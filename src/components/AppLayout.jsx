@@ -27,35 +27,35 @@ export default function AppLayout() {
   const pageMeta = {
     "/dashboard": {
       title: "Dashboard",
-      subtitle: "Overview of your banking activity",
+      subtitle: "Overview of bank accounts and activity",
     },
     "/accounts": {
       title: "Accounts",
-      subtitle: "View and manage your bank accounts",
+      subtitle: "View all customer accounts",
     },
     "/create-account": {
       title: "Create Account",
-      subtitle: "Open a new bank account",
+      subtitle: "Open a new customer account",
     },
     "/deposit": {
       title: "Deposit",
-      subtitle: "Add money to your account",
+      subtitle: "Deposit money into an account",
     },
     "/withdraw": {
       title: "Withdraw",
-      subtitle: "Withdraw money from your account",
+      subtitle: "Withdraw money from an account",
     },
     "/beneficiaries": {
       title: "Beneficiaries",
-      subtitle: "Manage saved transfer recipients",
+      subtitle: "Manage transfer recipients",
     },
     "/transfer": {
       title: "Transfer",
-      subtitle: "Send money securely",
+      subtitle: "Transfer funds between accounts",
     },
     "/transactions": {
       title: "Transactions",
-      subtitle: "View your transaction history",
+      subtitle: "View transaction history",
     },
     "/contact": {
       title: "Contact",
@@ -64,12 +64,12 @@ export default function AppLayout() {
   };
 
   const currentPage = pageMeta[location.pathname] || {
-    title: "MyBank",
-    subtitle: "Secure banking dashboard",
+    title: "iPay",
+    subtitle: "Bank management dashboard",
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex">
+    <div className="min-h-screen bg-slate-100 flex items-stretch">
       {menuOpen && (
         <div
           className="fixed inset-0 bg-black/40 z-30 lg:hidden"
@@ -78,13 +78,14 @@ export default function AppLayout() {
       )}
 
       <aside
-        className={`fixed lg:static top-0 left-0 h-screen w-72 bg-slate-900 text-white p-6 flex flex-col shadow-2xl z-40 transform transition-transform duration-300 overflow-y-auto ${menuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-          }`}
+        className={`fixed lg:sticky top-0 left-0 h-screen min-h-screen w-72 bg-slate-900 text-white px-6 py-8 flex flex-col shadow-2xl z-40 transform transition-transform duration-300 overflow-y-auto ${
+          menuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
       >
         <div>
           <div className="flex items-center gap-3">
             <img src="/favicon.svg" alt="logo" className="w-8 h-8" />
-            <h1 className="text-3xl font-bold">iPay</h1>
+            <h2 className="text-2xl font-bold">iPay</h2>
           </div>
           <p className="text-slate-400 text-sm mt-2">Secure banking dashboard</p>
         </div>
@@ -103,10 +104,11 @@ export default function AppLayout() {
                 key={item.to}
                 to={item.to}
                 onClick={() => setMenuOpen(false)}
-                className={`block px-4 py-3 rounded-xl transition ${active
+                className={`block px-4 py-3 rounded-xl transition ${
+                  active
                     ? "bg-white text-slate-900 font-semibold"
                     : "text-slate-200 hover:bg-white/10"
-                  }`}
+                }`}
               >
                 {item.label}
               </Link>
@@ -122,7 +124,7 @@ export default function AppLayout() {
         </button>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0 lg:ml-0">
+      <div className="flex-1 flex flex-col min-w-0">
         <header className="bg-white border-b border-slate-200 px-4 md:px-8 py-4 md:py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
@@ -149,7 +151,7 @@ export default function AppLayout() {
           </Link>
         </header>
 
-        <main className="p-4 md:p-8 overflow-auto">
+        <main className="p-4 md:p-8 overflow-auto flex-1">
           <Outlet />
         </main>
       </div>

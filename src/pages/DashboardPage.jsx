@@ -25,29 +25,30 @@ export default function DashboardPage() {
           Welcome, {user?.fullName}
         </h2>
         <p className="text-slate-500 mt-2 text-sm md:text-base">
-          Here’s an overview of your banking activity.
+          Overview of all customer accounts managed by your bank team.
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
         <StatCard title="Total Balance" value={`₹${totalBalance.toFixed(2)}`} />
-        <StatCard title="Accounts" value={accounts.length} />
-        <StatCard title="Profile Status" value="Active" />
+        <StatCard title="Total Accounts" value={accounts.length} />
+        <StatCard title="System Status" value="Active" />
       </div>
 
       <div className="bg-white rounded-2xl p-4 md:p-6 shadow">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Your Accounts</h3>
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">Recently Managed Accounts</h3>
 
         {accounts.length === 0 ? (
-          <p className="text-slate-500">No accounts found. Create your first account.</p>
+          <p className="text-slate-500">No accounts found.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {accounts.map((acc) => (
+            {accounts.slice(0, 6).map((acc) => (
               <div
                 key={acc.id}
                 className="border border-slate-200 rounded-2xl p-4 md:p-5 bg-slate-50"
               >
-                <p className="text-sm text-slate-500">{acc.accountType}</p>
+                <p className="text-sm text-slate-500">{acc.customerName}</p>
+                <p className="text-sm text-slate-500 mt-1">{acc.accountType}</p>
                 <p className="text-xl md:text-2xl font-bold text-slate-900 mt-2 break-all">
                   ₹{Number(acc.balance || 0).toFixed(2)}
                 </p>

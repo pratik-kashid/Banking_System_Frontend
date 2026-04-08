@@ -8,7 +8,7 @@ export default function useAccounts() {
   const fetchAccounts = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/accounts/me");
+      const res = await api.get("/accounts/all");
       setAccounts(res.data);
     } catch (err) {
       console.error("Failed to load accounts", err);

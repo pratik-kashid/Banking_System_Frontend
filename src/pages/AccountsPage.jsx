@@ -1,7 +1,25 @@
-import useAccounts from "../hooks/useAccounts";
+import { useEffect, useState } from "react";
+import api from "../api/axios";
 
 export default function AccountsPage() {
-  const { accounts, loading, refreshAccounts } = useAccounts();
+  const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchAccounts = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/accounts/all");
+      setAccounts(res.data);
+    } catch (err) {
+      console.error("Failed to load accounts", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAccounts();
+  }, []);
 
   if (loading) {
     return (
@@ -14,10 +32,10 @@ export default function AccountsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6 gap-4">
-        <h1 className="text-2xl font-bold text-slate-900">Your Accounts</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Customer Accounts</h1>
 
         <button
-          onClick={refreshAccounts}
+          onClick={fetchAccounts}
           className="bg-slate-900 text-white px-4 py-2 rounded-xl hover:bg-slate-800 transition"
         >
           Refresh
@@ -46,30 +64,15 @@ export default function AccountsPage() {
               </div>
 
               <div className="mt-6 space-y-2 text-sm text-slate-600">
-                <p>
-                  <span className="font-medium text-slate-800">Account Number:</span>{" "}
-                  {acc.accountNumber}
-                </p>
-
-                <p>
-                  <span className="font-medium text-slate-800">Currency:</span>{" "}
-                  {acc.currency}
-                </p>
-
-                <p>
-                  <span className="font-medium text-slate-800">Holder:</span>{" "}
-                  {acc.customerName || "-"}
-                </p>
-
-                <p>
-                  <span className="font-medium text-slate-800">Phone:</span>{" "}
-                  {acc.phone || "-"}
-                </p>
-
-                <p>
-                  <span className="font-medium text-slate-800">Nominee:</span>{" "}
-                  {acc.nomineeName || "-"}
-                </p>
+                <p><span className="font-medium text-slate-800">Customer Name:</span> {acc.customerName || "-"}</p>
+                <p><span className="font-medium text-slate-800">Customer Email:</span> {acc.customerEmail || "-"}</p>
+                <p><span className="font-medium text-slate-800">Phone:</span> {acc.phone || "-"}</p>
+                <p><span className="font-medium text-slate-800">Government ID:</span> {acc.governmentId || "-"}</p>
+                <p><span className="font-medium text-slate-800">Nominee:</span> {acc.nomineeName || "-"}</p>
+                <p><span className="font-medium text-slate-800">Occupation:</span> {acc.occupation || "-"}</p>
+                <p><span className="font-medium text-slate-800">Address:</span> {acc.address || "-"}</p>
+                <p><span className="font-medium text-slate-800">Account Number:</span> {acc.accountNumber}</p>
+                <p><span className="font-medium text-slate-800">Currency:</span> {acc.currency}</p>
               </div>
             </div>
           ))}

@@ -12,7 +12,6 @@ import DepositPage from "../pages/DepositPage";
 import WithdrawPage from "../pages/WithdrawPage";
 import BeneficiariesPage from "../pages/BeneficiariesPage";
 import ContactPage from "../pages/ContactPage";
-import CompleteProfilePage from "../pages/CompleteProfilePage";
 
 function PrivateLayout() {
   return getToken() ? <AppLayout /> : <Navigate to="/" replace />;
@@ -35,7 +34,6 @@ export default function AppRouter() {
           <Route path="/transfer" element={<TransferPage />} />
           <Route path="/transactions" element={<TransactionHistoryPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/complete-profile" element={<CompleteProfilePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

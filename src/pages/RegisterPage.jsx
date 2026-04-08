@@ -29,7 +29,19 @@ export default function RegisterPage() {
       saveAuth(response.data);
       navigate("/dashboard");
     } catch (err) {
-      setError(err?.response?.data?.error || "Registration failed");
+      console.error("Register error:", err);
+
+      if (err?.response?.data?.fields) {
+        const fieldErrors = Object.values(err.response.data.fields).join(", ");
+        setError(fieldErrors || "Validation failed");
+      } else {
+        setError(
+          err?.response?.data?.error ||
+          err?.response?.data?.message ||
+          err?.message ||
+          "Registration failed"
+        );
+      }
     } finally {
       setLoading(false);
     }

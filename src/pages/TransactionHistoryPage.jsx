@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
-import useAccounts from "../hooks/useAccounts";
 
 export default function TransactionHistoryPage() {
-  const { accounts } = useAccounts();
-
+  const [accounts, setAccounts] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [filter, setFilter] = useState({
     accountNumber: "",
@@ -13,6 +11,15 @@ export default function TransactionHistoryPage() {
     endDate: "",
   });
   const [error, setError] = useState("");
+
+  const fetchAccounts = async () => {
+    try {
+      const res = await api.get("/accounts/all");
+      setAccounts(res.data);
+    } catch (err) {
+      console.error("Failed to load accounts", err);
+    }
+  };
 
   const fetchTransactions = async () => {
     setError("");
@@ -32,6 +39,7 @@ export default function TransactionHistoryPage() {
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchAccounts();
     fetchTransactions();
   }, []);
 
@@ -54,7 +62,7 @@ export default function TransactionHistoryPage() {
             <option value="">All Accounts</option>
             {accounts.map((a) => (
               <option key={a.id} value={a.accountNumber}>
-                {a.accountNumber}
+                {a.accountNumber} - {a.customerName}
               </option>
             ))}
           </select>

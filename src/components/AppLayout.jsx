@@ -16,6 +16,7 @@ export default function AppLayout() {
   const navItems = [
     { to: "/dashboard", label: "Dashboard" },
     { to: "/accounts", label: "Accounts" },
+    { to: "/complete-profile", label: "Complete Profile" },
     { to: "/create-account", label: "Create Account" },
     { to: "/deposit", label: "Deposit" },
     { to: "/withdraw", label: "Withdraw" },

@@ -18,35 +18,15 @@ export default function TransactionHistoryPage() {
     setError("");
 
     try {
-      const response = await api.post("/transactions/search", {
+      const res = await api.post("/transactions/search", {
         accountNumber: filter.accountNumber || null,
         type: filter.type || null,
         startDate: filter.startDate || null,
         endDate: filter.endDate || null,
       });
-
-      setTransactions(response.data);
+      setTransactions(res.data);
     } catch (err) {
       setError(err?.response?.data?.error || "Failed to load transactions");
-    }
-  };
-
-  const downloadStatement = async () => {
-    try {
-      const response = await api.get("/transactions/statement", {
-        responseType: "blob",
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "statement.pdf");
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    // eslint-disable-next-line no-unused-vars
-    } catch (err) {
-      setError("Failed to download statement");
     }
   };
 
@@ -60,115 +40,91 @@ export default function TransactionHistoryPage() {
   };
 
   return (
-    <div>
-      <div style={styles.filters}>
-        <select
-          style={styles.input}
-          name="accountNumber"
-          value={filter.accountNumber}
-          onChange={handleChange}
+    <div className="space-y-6">
+      <div className="bg-white rounded-2xl p-6 shadow">
+        <h2 className="text-xl font-bold text-slate-900 mb-4">Transaction History</h2>
+
+        <div className="grid md:grid-cols-4 gap-4">
+          <select
+            name="accountNumber"
+            value={filter.accountNumber}
+            onChange={handleChange}
+            className="border border-slate-300 rounded-xl px-4 py-3"
+          >
+            <option value="">All Accounts</option>
+            {accounts.map((a) => (
+              <option key={a.id} value={a.accountNumber}>
+                {a.accountNumber}
+              </option>
+            ))}
+          </select>
+
+          <select
+            name="type"
+            value={filter.type}
+            onChange={handleChange}
+            className="border border-slate-300 rounded-xl px-4 py-3"
+          >
+            <option value="">All Types</option>
+            <option value="DEPOSIT">Deposit</option>
+            <option value="WITHDRAW">Withdraw</option>
+            <option value="TRANSFER">Transfer</option>
+          </select>
+
+          <input
+            type="date"
+            name="startDate"
+            value={filter.startDate}
+            onChange={handleChange}
+            className="border border-slate-300 rounded-xl px-4 py-3"
+          />
+
+          <input
+            type="date"
+            name="endDate"
+            value={filter.endDate}
+            onChange={handleChange}
+            className="border border-slate-300 rounded-xl px-4 py-3"
+          />
+        </div>
+
+        <button
+          onClick={fetchTransactions}
+          className="mt-4 bg-slate-900 text-white px-5 py-3 rounded-xl hover:bg-slate-800"
         >
-          <option value="">All Accounts</option>
-          {accounts.map((a) => (
-            <option key={a.id} value={a.accountNumber}>
-              {a.accountNumber}
-            </option>
-          ))}
-        </select>
-
-        <select
-          style={styles.input}
-          name="type"
-          value={filter.type}
-          onChange={handleChange}
-        >
-          <option value="">All Types</option>
-          <option value="DEPOSIT">Deposit</option>
-          <option value="WITHDRAW">Withdraw</option>
-          <option value="TRANSFER">Transfer</option>
-        </select>
-
-        <input
-          style={styles.input}
-          type="date"
-          name="startDate"
-          value={filter.startDate}
-          onChange={handleChange}
-        />
-
-        <input
-          style={styles.input}
-          type="date"
-          name="endDate"
-          value={filter.endDate}
-          onChange={handleChange}
-        />
-
-        <button style={styles.button} onClick={fetchTransactions}>
           Search
         </button>
 
-        <button style={styles.buttonSecondary} onClick={downloadStatement}>
-          Download Statement
-        </button>
+        {error && (
+          <div className="mt-4 bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">
+            {error}
+          </div>
+        )}
       </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      <div style={styles.list}>
+      <div className="grid gap-4">
         {transactions.map((t) => (
-          <div key={t.referenceNumber} style={styles.card}>
-            <h3>{t.type}</h3>
-            <p>Amount: ₹{t.amount}</p>
-            <p>Date: {t.createdAt}</p>
-            <p>Reference: {t.referenceNumber}</p>
-            <p>Status: {t.status}</p>
-            <p>From: {t.fromAccount || "-"}</p>
-            <p>To: {t.toAccount || "-"}</p>
-            <p>Description: {t.description || "-"}</p>
+          <div key={t.referenceNumber} className="bg-white rounded-2xl p-5 shadow">
+            <div className="flex justify-between items-start gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">{t.type}</h3>
+                <p className="text-slate-500 text-sm mt-1">Ref: {t.referenceNumber}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-lg font-bold text-slate-900">₹{t.amount}</p>
+                <p className="text-sm text-slate-500">{t.status}</p>
+              </div>
+            </div>
+
+            <div className="mt-4 text-sm text-slate-600 space-y-1">
+              <p>From: {t.fromAccount || "-"}</p>
+              <p>To: {t.toAccount || "-"}</p>
+              <p>Description: {t.description || "-"}</p>
+              <p>Date: {t.createdAt}</p>
+            </div>
           </div>
         ))}
       </div>
     </div>
   );
 }
-
-const styles = {
-  filters: {
-    display: "flex",
-    gap: "10px",
-    marginBottom: "20px",
-    flexWrap: "wrap",
-  },
-  input: {
-    padding: "10px",
-    borderRadius: "8px",
-    border: "1px solid #d0d7e2",
-  },
-  button: {
-    padding: "10px 14px",
-    borderRadius: "8px",
-    border: "none",
-    background: "#111827",
-    color: "#fff",
-    cursor: "pointer",
-  },
-  buttonSecondary: {
-    padding: "10px 14px",
-    borderRadius: "8px",
-    border: "none",
-    background: "#2563eb",
-    color: "#fff",
-    cursor: "pointer",
-  },
-  list: {
-    display: "grid",
-    gap: "12px",
-  },
-  card: {
-    background: "#fff",
-    padding: "16px",
-    borderRadius: "12px",
-    boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-  },
-};

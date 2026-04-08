@@ -20,8 +20,77 @@ export default function CreateAccountPage() {
   const [createdAccount, setCreatedAccount] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const onlyLetters = (value) => value.replace(/[^a-zA-Z\s]/g, "");
+  const onlyDigits = (value) => value.replace(/\D/g, "");
+  const toUpperNoSpaces = (value) => value.toUpperCase().replace(/\s/g, "");
+
+  const isAdult = (dob) => {
+    if (!dob) return false;
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    return age >= 18;
+  };
+
+  const validateForm = () => {
+    if (!form.fullName.trim()) return "Full name is required";
+    if (form.fullName.trim().length < 3) return "Full name must be at least 3 characters";
+
+    if (!form.email.trim()) return "Email is required";
+
+    if (!form.dateOfBirth) return "Date of birth is required";
+    if (!isAdult(form.dateOfBirth)) return "Customer must be at least 18 years old";
+
+    if (!/^[0-9]{10}$/.test(form.phone)) return "Phone number must be exactly 10 digits";
+
+    if (!form.address.trim()) return "Address is required";
+    if (form.address.trim().length < 10) return "Address must be at least 10 characters";
+
+    if (!form.governmentId.trim()) return "Government ID is required";
+    if (!/^[A-Z0-9]{6,20}$/.test(form.governmentId)) {
+      return "Government ID must be 6 to 20 characters and contain only uppercase letters and numbers";
+    }
+
+    if (!form.nomineeName.trim()) return "Nominee name is required";
+    if (form.nomineeName.trim().length < 3) return "Nominee name must be at least 3 characters";
+
+    if (!form.occupation.trim()) return "Occupation is required";
+    if (form.occupation.trim().length < 2) return "Occupation must be at least 2 characters";
+
+    if (!form.currency.trim()) return "Currency is required";
+    if (!/^[A-Z]{3}$/.test(form.currency)) return "Currency must be exactly 3 uppercase letters like INR";
+
+    return "";
+  };
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    let updatedValue = value;
+
+    if (name === "fullName" || name === "nomineeName" || name === "occupation") {
+      updatedValue = onlyLetters(value);
+    }
+
+    if (name === "phone") {
+      updatedValue = onlyDigits(value).slice(0, 10);
+    }
+
+    if (name === "governmentId") {
+      updatedValue = toUpperNoSpaces(value).slice(0, 20);
+    }
+
+    if (name === "currency") {
+      updatedValue = toUpperNoSpaces(value).slice(0, 3);
+    }
+
+    setForm({ ...form, [name]: updatedValue });
   };
 
   const handleSubmit = async (e) => {
@@ -29,12 +98,20 @@ export default function CreateAccountPage() {
     setMessage("");
     setError("");
     setCreatedAccount(null);
+
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setLoading(true);
 
     try {
       const response = await api.post("/accounts", form);
       setCreatedAccount(response.data);
       setMessage("Customer account created successfully");
+
       setForm({
         fullName: "",
         email: "",
@@ -99,6 +176,7 @@ export default function CreateAccountPage() {
               name="dateOfBirth"
               value={form.dateOfBirth}
               onChange={handleChange}
+              max={new Date().toISOString().split("T")[0]}
             />
           </div>
 
@@ -133,6 +211,7 @@ export default function CreateAccountPage() {
               value={form.governmentId}
               onChange={handleChange}
               placeholder="PAN / Aadhaar / ID Number"
+              maxLength={20}
             />
           </div>
 
@@ -179,6 +258,7 @@ export default function CreateAccountPage() {
               value={form.currency}
               onChange={handleChange}
               placeholder="INR"
+              maxLength={3}
             />
           </div>
 

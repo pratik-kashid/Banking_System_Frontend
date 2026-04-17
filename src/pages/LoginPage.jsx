@@ -13,7 +13,7 @@ export default function LoginPage() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [slowMessage, setSlowMessage] = useState("");
+  const [slowMessage] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -22,12 +22,10 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setSlowMessage("");
     setLoading(true);
 
-    const timer = setTimeout(() => {
-      setSlowMessage("Server is waking up. Please wait a few seconds...");
-    }, 4000);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
 
     try {
       const response = await api.post("/auth/login", form);
@@ -43,7 +41,6 @@ export default function LoginPage() {
         "Login failed"
       );
     } finally {
-      clearTimeout(timer);
       setLoading(false);
     }
   };
